@@ -751,6 +751,7 @@ select.form-control {
 .upload-icon {
   font-size: 48px;
   margin-bottom: var(--space-16);
+  color: var(--color-primary);
 }
 
 .upload-area h3 {
@@ -1028,8 +1029,12 @@ select.form-control {
   animation: pulse 1.5s ease-in-out infinite;
 }
 
-.progress-step.completed .step-icon:before {
-  content: "✓";
+.progress-step.active .step-icon i {
+  color: var(--color-primary, #0066cc);
+}
+
+.progress-step.completed .step-icon i {
+  color: var(--color-success, #28a745);
 }
 
 @keyframes pulse {
@@ -1151,6 +1156,7 @@ select.form-control {
 .viewer-placeholder-icon {
   font-size: 48px;
   margin-bottom: var(--space-16);
+  color: var(--color-text-secondary);
 }
 
 .pdf-viewer__placeholder p {

@@ -94,19 +94,33 @@ class PDFMetadataEditor {
             });
         }
 
+        // Browse button click handler - direct event listener
+        if (browseBtn) {
+            browseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (fileInput) {
+                    fileInput.click();
+                }
+            });
+        }
+
         // Upload area click - fix the click handler
         if (uploadArea) {
             uploadArea.addEventListener('click', (e) => {
-                // Don't prevent default for the label element
-                if (e.target.closest('label[for="fileInput"]') || e.target.closest('#browseBtn')) {
-                    return; // Let the label handle the click
+                // Check if the click is on the browse button or its label
+                if (e.target.closest('#browseBtn') || e.target.closest('label[for="fileInput"]')) {
+                    return; // Let the button/label handle the click
                 }
                 
-                e.preventDefault();
-                e.stopPropagation();
-                
-                if (fileInput) {
-                    fileInput.click();
+                // Only trigger file input for clicks on the upload area itself
+                if (e.target === uploadArea || e.target.closest('.upload-area__content')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (fileInput) {
+                        fileInput.click();
+                    }
                 }
             });
 
@@ -897,6 +911,21 @@ class PDFMetadataEditor {
             step.className = 'progress-step';
             if (status) {
                 step.classList.add(status);
+            }
+            
+            // Update icon for completed steps
+            const icon = step.querySelector('.step-icon i');
+            if (icon && status === 'completed') {
+                icon.className = 'fas fa-check';
+            } else if (icon && status !== 'completed') {
+                // Reset to original icon based on step number
+                const originalIcons = {
+                    1: 'fas fa-edit',
+                    2: 'fas fa-compress-alt',
+                    3: 'fas fa-stream',
+                    4: 'fas fa-check'
+                };
+                icon.className = originalIcons[stepNumber] || 'fas fa-spinner fa-spin';
             }
         }
     }

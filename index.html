@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Tools</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -20,13 +21,13 @@
                     <div class="upload-area" id="uploadArea" tabindex="0">
                         <input type="file" id="fileInput" accept="application/pdf" class="file-input" aria-label="Select a PDF file">
                         <div class="upload-area__content" aria-hidden="true">
-                            <div class="upload-icon" role="img" aria-label="PDF icon">📄</div>
+                            <div class="upload-icon" role="img" aria-label="Upload icon"><i class="fas fa-cloud-upload-alt"></i></div>
                             <h3>Drop PDF file here or click to browse</h3>
                             <p class="upload-area__subtitle">Maximum file size: 50MB</p>
                             <label for="fileInput" class="btn btn--primary" id="browseBtn">Browse Files</label>
                         </div>
                         <div class="upload-area__dragover" aria-hidden="true">
-                            <div class="upload-icon" role="img" aria-label="Folder icon"><i class="fa-solid fa-folder"></i></div>
+                            <div class="upload-icon" role="img" aria-label="Folder icon"><i class="fas fa-folder"></i></div>
                             <h3>Release to upload</h3>
                         </div>
                     </div>
@@ -67,7 +68,7 @@
                         <!-- QPDF Status Warning -->
                         <div class="qpdf-status" id="qpdfStatus" style="display: none;">
                             <div class="alert alert--warning">
-                                <strong>⚠️ PDF Linearization Not Available</strong><br>
+                                <strong><i class="fas fa-exclamation-triangle"></i> PDF Linearization Not Available</strong><br>
                                 QPDF WebAssembly could not be loaded from CDN sources. 
                                 <br><br>
                                 <strong>To enable linearization:</strong>
@@ -228,19 +229,19 @@
                         </div>
                         <div class="progress-steps">
                             <div class="progress-step" id="step1">
-                                <span class="step-icon">⏳</span>
+                                <span class="step-icon"><i class="fas fa-edit"></i></span>
                                 <span class="step-text">Updating metadata</span>
                             </div>
                             <div class="progress-step" id="step2">
-                                <span class="step-icon">⏳</span>
+                                <span class="step-icon"><i class="fas fa-compress-alt"></i></span>
                                 <span class="step-text">Compressing PDF</span>
                             </div>
                             <div class="progress-step" id="step3">
-                                <span class="step-icon">⏳</span>
+                                <span class="step-icon"><i class="fas fa-stream"></i></span>
                                 <span class="step-text">Linearizing PDF</span>
                             </div>
                             <div class="progress-step" id="step4">
-                                <span class="step-icon">⏳</span>
+                                <span class="step-icon"><i class="fas fa-check"></i></span>
                                 <span class="step-text">Finalizing document</span>
                             </div>
                         </div>
@@ -262,7 +263,7 @@
                 </div>
                 <div class="pdf-viewer" id="pdfViewer">
                     <div class="pdf-viewer__placeholder" id="viewerPlaceholder">
-                        <div class="viewer-placeholder-icon">👁️</div>
+                        <div class="viewer-placeholder-icon"><i class="fas fa-file-pdf"></i></div>
                         <p>Upload a PDF to view it here</p>
                     </div>
                     <canvas id="pdfCanvas" style="display: none;"></canvas>
@@ -284,7 +285,7 @@
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <!-- QPDF WASM Loader -->
-    <script src="qpdf-loader.js"></script>
+    <script src="helper.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
