@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Tools</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>PDF Tools</h1>
+            <p class="header__subtitle">Upload a PDF file to edit metadata and optimize for web viewing</p>
+        </header>
+
+        <main class="main-content">
+            <div class="editor-panel">
+                <!-- File Upload Area -->
+                <div class="upload-section">
+                    <div class="upload-area" id="uploadArea" tabindex="0">
+                        <input type="file" id="fileInput" accept="application/pdf" class="file-input" aria-label="Select a PDF file">
+                        <div class="upload-area__content" aria-hidden="true">
+                            <div class="upload-icon" role="img" aria-label="PDF icon">📄</div>
+                            <h3>Drop PDF file here or click to browse</h3>
+                            <p class="upload-area__subtitle">Maximum file size: 50MB</p>
+                            <label for="fileInput" class="btn btn--primary" id="browseBtn">Browse Files</label>
+                        </div>
+                        <div class="upload-area__dragover" aria-hidden="true">
+                            <div class="upload-icon" role="img" aria-label="Folder icon"><i class="fa-solid fa-folder"></i></div>
+                            <h3>Release to upload</h3>
+                        </div>
+                    </div>
+
+                    <!-- File Info -->
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-info__item">
+                            <span class="file-info__label">File:</span>
+                            <span id="fileName"></span>
+                        </div>
+                        <div class="file-info__item">
+                            <span class="file-info__label">Size:</span>
+                            <span id="fileSize"></span>
+                        </div>
+                        <div class="file-info__item">
+                            <span class="file-info__label">Pages:</span>
+                            <span id="pageCount"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PDF Optimization Section -->
+                <div class="optimization-section" id="optimizationSection" style="display: none;">
+                    <h3>PDF Optimization</h3>
+                    
+                    <!-- Linearization Option -->
+                    <div class="optimization-option">
+                        <div class="option-header">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="enableLinearization" checked>
+                                <span class="checkmark"></span>
+                                <span class="option-title">Enable Fast Web View (Linearization)</span>
+                            </label>
+                            <button type="button" class="btn btn--outline btn--sm info-btn" id="linearizationInfo" title="Learn more about linearization">?</button>
+                        </div>
+                        <p class="option-description">Reorganizes PDF structure for faster web viewing and progressive loading</p>
+                        
+                        <!-- QPDF Status Warning -->
+                        <div class="qpdf-status" id="qpdfStatus" style="display: none;">
+                            <div class="alert alert--warning">
+                                <strong>⚠️ PDF Linearization Not Available</strong><br>
+                                QPDF WebAssembly could not be loaded from CDN sources. 
+                                <br><br>
+                                <strong>To enable linearization:</strong>
+                                <ul style="margin: 8px 0; padding-left: 16px;">
+                                    <li>Check your internet connection and refresh the page</li>
+                                    <li>Host your own QPDF WASM build locally</li>
+                                    <li>Use server-side PDF linearization instead</li>
+                                </ul>
+                                <em>Metadata editing will still work without linearization.</em>
+                            </div>
+                        </div>
+                        
+                        <!-- Linearization Benefits -->
+                        <div class="benefits-info" id="benefitsInfo" style="display: none;">
+                            <h4>Linearization Benefits:</h4>
+                            <ul class="benefits-list">
+                                <li>Faster initial page display</li>
+                                <li>Progressive loading of PDF pages</li>
+                                <li>Improved user experience on slow connections</li>
+                                <li>Better performance for large PDFs</li>
+                                <li>Optimized for web streaming</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- PDF Compression Section -->
+                    <div class="optimization-option">
+                        <div class="option-header">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="enableCompression" checked>
+                                <span class="checkmark"></span>
+                                <span class="option-title">Enable PDF Compression</span>
+                            </label>
+                            <button type="button" class="btn btn--outline btn--sm info-btn" id="compressionInfo" title="Learn more about compression">?</button>
+                        </div>
+                        <p class="option-description">Reduce file size by compressing images and optimizing content</p>
+                        
+                        <!-- Compression Level -->
+                        <div class="compression-settings" id="compressionSettings">
+                            <label for="compressionLevel" class="form-label">Compression Level:</label>
+                            <select id="compressionLevel" class="form-control">
+                                <option value="light">Light (Best Quality, Minimal Size Reduction)</option>
+                                <option value="medium" selected>Medium (Balanced Quality & Size)</option>
+                                <option value="high">High (Good Quality, Better Compression)</option>
+                                <option value="extreme">Extreme (Maximum Compression)</option>
+                            </select>
+                            <p class="compression-description" id="compressionDescription">
+                                Balanced compression with good quality retention and moderate file size reduction.
+                            </p>
+                        </div>
+                        
+                        <!-- Compression Benefits -->
+                        <div class="benefits-info" id="compressionBenefitsInfo" style="display: none;">
+                            <h4>Compression Benefits:</h4>
+                            <ul class="benefits-list">
+                                <li><strong>Light:</strong> JPEG quality 85%, minimal font compression</li>
+                                <li><strong>Medium:</strong> JPEG quality 75%, standard optimization</li>
+                                <li><strong>High:</strong> JPEG quality 65%, aggressive font compression</li>
+                                <li><strong>Extreme:</strong> JPEG quality 50%, maximum optimization</li>
+                            </ul>
+                            <p><em>Note: Text and vector graphics maintain high quality at all levels.</em></p>
+                        </div>
+                    </div>
+
+                    <!-- File Size Comparison -->
+                    <div class="size-comparison" id="sizeComparison" style="display: none;">
+                        <h4>File Size Comparison</h4>
+                        <div class="size-comparison__row">
+                            <span>Original Size:</span>
+                            <span id="originalSize">-</span>
+                        </div>
+                        <div class="size-comparison__row">
+                            <span>Optimized Size:</span>
+                            <span id="optimizedSize">-</span>
+                        </div>
+                        <div class="size-comparison__row size-comparison__savings">
+                            <span>Size Change:</span>
+                            <span id="sizeSavings">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metadata Editor Form -->
+                <div class="metadata-editor" id="metadataEditor">
+                    <h3>Edit Metadata</h3>
+                    <form id="metadataForm">
+                        <div class="form-group">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" id="title" name="title" class="form-control" placeholder="Document title" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="author" class="form-label">Author</label>
+                            <input type="text" id="author" name="author" class="form-control" placeholder="Document author" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" id="subject" name="subject" class="form-control" placeholder="Document subject" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="keywords" class="form-label">Keywords</label>
+                            <input type="text" id="keywords" name="keywords" class="form-control" placeholder="Comma-separated keywords" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="creator" class="form-label">Creator</label>
+                            <input type="text" id="creator" name="creator" class="form-control" placeholder="Application that created the document" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="producer" class="form-label">Producer</label>
+                            <input type="text" id="producer" name="producer" class="form-control" placeholder="Application that produced the PDF" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="creationDate" class="form-label">Creation Date</label>
+                            <input type="datetime-local" id="creationDate" name="creationDate" class="form-control" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="modificationDate" class="form-label">Modification Date</label>
+                            <input type="datetime-local" id="modificationDate" name="modificationDate" class="form-control" disabled>
+                        </div>
+                    </form>
+
+                    <!-- Custom Metadata Fields -->
+                    <div class="custom-metadata">
+                        <h4>Custom Metadata Fields</h4>
+                        <div id="customFields"></div>
+                        <button type="button" class="btn btn--outline btn--sm" id="addCustomField" disabled>
+                            + Add Custom Field
+                        </button>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn--primary" id="processDocument" disabled>
+                            Process Document
+                        </button>
+                        <button type="button" class="btn btn--secondary" id="downloadPdf" style="display: none;">
+                            Download Optimized PDF
+                        </button>
+                        <button type="button" class="btn btn--outline" id="resetForm" disabled>
+                            Reset
+                        </button>
+                    </div>
+
+                    <!-- Processing Progress -->
+                    <div class="processing-progress" id="processingProgress" style="display: none;">
+                        <div class="progress-header">
+                            <h4>Processing Document...</h4>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-steps">
+                            <div class="progress-step" id="step1">
+                                <span class="step-icon">⏳</span>
+                                <span class="step-text">Updating metadata</span>
+                            </div>
+                            <div class="progress-step" id="step2">
+                                <span class="step-icon">⏳</span>
+                                <span class="step-text">Compressing PDF</span>
+                            </div>
+                            <div class="progress-step" id="step3">
+                                <span class="step-icon">⏳</span>
+                                <span class="step-text">Linearizing PDF</span>
+                            </div>
+                            <div class="progress-step" id="step4">
+                                <span class="step-icon">⏳</span>
+                                <span class="step-text">Finalizing document</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDF Viewer Panel -->
+            <div class="viewer-panel">
+                <div class="viewer-header">
+                    <h3>PDF Preview</h3>
+                    <div class="viewer-controls" id="viewerControls" style="display: none;">
+                        <button type="button" class="btn btn--outline btn--sm" id="prevPage" aria-label="Previous page">←</button>
+                        <span id="pageInfo">Page 1 of 1</span>
+                        <button type="button" class="btn btn--outline btn--sm" id="nextPage" aria-label="Next page">→</button>
+                        <button type="button" class="btn btn--outline btn--sm" id="zoomOut" aria-label="Zoom out">-</button>
+                        <button type="button" class="btn btn--outline btn--sm" id="zoomIn" aria-label="Zoom in">+</button>
+                    </div>
+                </div>
+                <div class="pdf-viewer" id="pdfViewer">
+                    <div class="pdf-viewer__placeholder" id="viewerPlaceholder">
+                        <div class="viewer-placeholder-icon">👁️</div>
+                        <p>Upload a PDF to view it here</p>
+                    </div>
+                    <canvas id="pdfCanvas" style="display: none;"></canvas>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p id="loadingText">Processing PDF...</p>
+        </div>
+
+        <!-- Toast Messages -->
+        <div class="toast" id="toast" style="display: none;"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- QPDF WASM Loader -->
+    <script src="qpdf-loader.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
