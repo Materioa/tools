@@ -1,0 +1,5 @@
+title: PDF Tools
+description: Upload a PDF file to edit metadata and optimize for web viewing
+
+plugins:
+  - jekyll-feed

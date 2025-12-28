@@ -1,0 +1,77 @@
+#emoji-list {
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 60vh;
+    overflow-y: auto;
+    gap: 8px;
+}
+
+.emoji-item {
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 14px;
+}
+
+.emoji-item.selected {
+    outline: 2px solid #3f51b5;
+    border-radius: 4px;
+}
+
+.dark .emoji-item {
+    background: #333;
+    color: #fff;
+}
+
+.no-results {
+    padding: 16px;
+    width: 100%;
+    text-align: center;
+    color: #777;
+}
+
+.emoji-item img {
+    width: 2rem;
+    height: 2rem;
+}
+
+#emoji-count {
+    margin: 8px 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.emoji-preview {
+    width: 2rem;
+    height: 2rem;
+    margin: 4px;
+}
+
+/* Styles for inline emojis in chat messages */
+.emoji-img {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: none !important;
+    padding: 0 !important;
+    margin: 0 2px !important;
+    vertical-align: middle !important;
+}
+
+/* Styles for reaction emojis - bigger size, no bubble */
+.reaction {
+    display: inline-block !important;
+    margin: 2px !important;
+    padding: 0 !important;
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    font-size: 1.8rem !important;
+    cursor: pointer !important;
+    transition: transform 0.2s !important;
+}
+
+.reaction:hover {
+    transform: scale(1.2) !important;
+    background: none !important;
+}

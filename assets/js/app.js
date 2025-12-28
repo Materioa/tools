@@ -14,20 +14,29 @@ class PDFMetadataEditor {
         this.qpdfWasm = null;
         this.qpdfSourceInfo = null;
         this.isQPDFInitializing = false;
+        this.ghostscriptWasm = null;
+        this.isGhostscriptInitializing = false;
         
         this.init();
     }
 
     init() {
+        console.log('PDFMetadataEditor initializing...');
         this.setupPDFJS();
         this.initQPDF();
+        this.initGhostscript();
         this.setupEventListeners();
         this.initializeFormState();
+        console.log('PDFMetadataEditor initialization complete');
     }
 
     setupPDFJS() {
+        console.log('Setting up PDF.js...');
         if (typeof pdfjsLib !== 'undefined') {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            console.log('PDF.js configured successfully');
+        } else {
+            console.error('PDF.js not loaded');
         }
     }
 
@@ -54,16 +63,84 @@ class PDFMetadataEditor {
                     }
                     
                     this.qpdfSourceInfo = loader.getLoadedSourceInfo();
+                    this.onQPDFInitialized();
                 }
             } else if (typeof QPDFWasm !== 'undefined') {
                 this.qpdfWasm = await QPDFWasm();
+                this.onQPDFInitialized();
             } else if (typeof qpdfWasm !== 'undefined') {
                 this.qpdfWasm = await qpdfWasm();
+                this.onQPDFInitialized();
             }
         } catch (error) {
             // QPDF initialization failed - linearization will not be available
         } finally {
             this.isQPDFInitializing = false;
+        }
+    }
+
+    onQPDFInitialized() {
+        // Update UI when QPDF becomes available
+        if (this.isFileLoaded) {
+            this.setFormEnabled(true);
+            this.updateProcessButtonText();
+            this.updateCompressionDescription();
+            this.updateCompressionEngineOptions();
+            this.updateCompressionQualityIndicator();
+            
+            // Only show notification if Ghostscript is not available (to avoid duplicate notifications)
+            if (!this.ghostscriptWasm) {
+                this.showToast('QPDF loaded - enhanced compression and linearization available', 'success');
+            }
+        }
+    }
+
+    async initGhostscript() {
+        if (this.isGhostscriptInitializing) {
+            return;
+        }
+        
+        this.isGhostscriptInitializing = true;
+        
+        try {
+            // Check for the new Ghostscript WASM API patterns
+            if (typeof createGhostscriptWasm === 'function') {
+                this.ghostscriptWasm = await createGhostscriptWasm();
+                this.onGhostscriptInitialized();
+            } else if (typeof GhostscriptWasm === 'function') {
+                this.ghostscriptWasm = await GhostscriptWasm();
+                this.onGhostscriptInitialized();
+            } else if (typeof ghostscriptWasm === 'function') {
+                this.ghostscriptWasm = await ghostscriptWasm();
+                this.onGhostscriptInitialized();
+            } else if (window.ghostscriptWasm) {
+                this.ghostscriptWasm = window.ghostscriptWasm;
+                this.onGhostscriptInitialized();
+            } else if (window.gs) {
+                // Check for the gs.min.js library pattern
+                this.ghostscriptWasm = window.gs;
+                this.onGhostscriptInitialized();
+            } else if (typeof gs !== 'undefined') {
+                this.ghostscriptWasm = gs;
+                this.onGhostscriptInitialized();
+            }
+        } catch (error) {
+            // Ghostscript initialization failed - aggressive compression will not be available
+            console.warn('Ghostscript WASM initialization failed:', error);
+        } finally {
+            this.isGhostscriptInitializing = false;
+        }
+    }
+
+    onGhostscriptInitialized() {
+        // Update UI when Ghostscript becomes available
+        if (this.isFileLoaded) {
+            this.setFormEnabled(true);
+            this.updateProcessButtonText();
+            this.updateCompressionDescription();
+            this.updateCompressionEngineOptions();
+            this.updateCompressionQualityIndicator();
+            this.showToast('Ghostscript loaded - aggressive compression available', 'success');
         }
     }
 
@@ -79,30 +156,48 @@ class PDFMetadataEditor {
     }
 
     setupEventListeners() {
+        console.log('Setting up event listeners...');
         // File input handling
         const fileInput = document.getElementById('fileInput');
         const uploadArea = document.getElementById('uploadArea');
         const browseBtn = document.getElementById('browseBtn');
 
+        console.log('Elements found:', {
+            fileInput: !!fileInput,
+            uploadArea: !!uploadArea,
+            browseBtn: !!browseBtn
+        });
+
         // File selection - make sure this works properly
         if (fileInput) {
             fileInput.addEventListener('change', (e) => {
+                console.log('File input change event triggered');
                 const file = e.target.files[0];
                 if (file) {
+                    console.log('File selected:', file.name);
                     this.handleFile(file);
+                } else {
+                    console.log('No file selected');
                 }
             });
+        } else {
+            console.error('fileInput element not found');
         }
 
         // Browse button click handler - direct event listener
         if (browseBtn) {
             browseBtn.addEventListener('click', (e) => {
+                console.log('Browse button clicked');
                 e.preventDefault();
                 e.stopPropagation();
                 if (fileInput) {
                     fileInput.click();
+                } else {
+                    console.error('fileInput not found when browse button clicked');
                 }
             });
+        } else {
+            console.error('browseBtn element not found');
         }
 
         // Upload area click - fix the click handler
@@ -140,12 +235,15 @@ class PDFMetadataEditor {
             });
 
             uploadArea.addEventListener('drop', (e) => {
+                console.log('Drop event triggered');
                 e.preventDefault();
                 e.stopPropagation();
                 uploadArea.classList.remove('dragover');
                 
                 const files = e.dataTransfer.files;
+                console.log('Files dropped:', files.length);
                 if (files.length > 0) {
+                    console.log('Handling dropped file:', files[0].name);
                     this.handleFile(files[0]);
                 }
             });
@@ -248,6 +346,7 @@ class PDFMetadataEditor {
         const enableLinearization = document.getElementById('enableLinearization');
         const compressionInfo = document.getElementById('compressionInfo');
         const enableCompression = document.getElementById('enableCompression');
+        const compressionEngine = document.getElementById('compressionEngine');
         const compressionLevel = document.getElementById('compressionLevel');
 
         if (linearizationInfo) {
@@ -278,6 +377,18 @@ class PDFMetadataEditor {
             enableCompression.addEventListener('change', () => {
                 this.toggleCompressionSettings();
                 this.updateProcessButtonText();
+            });
+        }
+
+        if (compressionEngine) {
+            compressionEngine.addEventListener('change', () => {
+                try {
+                    this.updateCompressionEngineOptions();
+                    this.updateCompressionDescription();
+                    this.updateCompressionQualityIndicator();
+                } catch (error) {
+                    console.warn('Error updating compression engine UI:', error);
+                }
             });
         }
 
@@ -319,14 +430,32 @@ class PDFMetadataEditor {
         
         if (!compressionLevel || !compressionDescription) return;
 
+        const level = compressionLevel.value;
+        const selectedEngine = this.getSelectedCompressionEngine();
+        
         const descriptions = {
-            'light': 'Minimal compression with highest quality retention. Best for documents with important images.',
-            'medium': 'Balanced compression with good quality retention and moderate file size reduction.',
-            'high': 'Aggressive compression with good quality. Suitable for web distribution and sharing.',
-            'extreme': 'Maximum compression for smallest file size. May affect image quality slightly.'
+            'ghostscript': {
+                'light': 'Light compression with Ghostscript: 90% image quality, 300 DPI resolution. Minimal optimization, preserves quality.',
+                'medium': 'Medium compression with Ghostscript: 75% image quality, 200 DPI resolution. Balanced optimization for general use.',
+                'high': 'High compression with Ghostscript: 60% image quality, 150 DPI resolution. Aggressive optimization with significant size reduction.',
+                'extreme': 'Extreme compression with Ghostscript: 40% image quality, 100 DPI resolution. Maximum optimization for web distribution.'
+            },
+            'qpdf': {
+                'light': 'Light compression with QPDF: Preserves streams, minimal optimization. Best for documents with important images.',
+                'medium': 'Medium compression with QPDF: Generates object streams, removes unused resources, optimizes images. Balanced size reduction.',
+                'high': 'High compression with QPDF: Advanced optimization with flate recompression, image optimization, and resource cleanup.',
+                'extreme': 'Extreme compression with QPDF: Maximum optimization with content normalization, full resource cleanup, and aggressive compression.'
+            },
+            'pdflib': {
+                'light': 'Light compression with pdf-lib: Basic object stream optimization with minimal changes.',
+                'medium': 'Medium compression with pdf-lib: Standard object stream optimization with moderate compression.',
+                'high': 'High compression with pdf-lib: Enhanced object stream optimization with more aggressive settings.',
+                'extreme': 'Extreme compression with pdf-lib: Maximum object stream optimization - quality may be affected.'
+            }
         };
 
-        compressionDescription.textContent = descriptions[compressionLevel.value] || descriptions.medium;
+        const engineDescriptions = descriptions[selectedEngine] || descriptions.pdflib;
+        compressionDescription.textContent = engineDescriptions[level] || engineDescriptions.medium;
     }
 
     updateProcessButtonText() {
@@ -376,6 +505,7 @@ class PDFMetadataEditor {
             });
         }
 
+        // Handle linearization checkbox
         const enableLinearization = document.getElementById('enableLinearization');
         if (enableLinearization) {
             // Enable the checkbox only if form is enabled AND QPDF is available
@@ -409,6 +539,28 @@ class PDFMetadataEditor {
                 }
             }
         }
+
+        // Handle compression settings
+        const enableCompression = document.getElementById('enableCompression');
+        if (enableCompression) {
+            enableCompression.disabled = !enabled;
+        }
+
+        // Handle compression engine selector
+        const compressionEngine = document.getElementById('compressionEngine');
+        if (compressionEngine) {
+            compressionEngine.disabled = !enabled;
+            if (enabled) {
+                this.updateCompressionEngineOptions();
+                this.updateCompressionQualityIndicator();
+            }
+        }
+
+        // Handle compression level selector
+        const compressionLevel = document.getElementById('compressionLevel');
+        if (compressionLevel) {
+            compressionLevel.disabled = !enabled;
+        }
     }
 
     setButtonsEnabled(enabled) {
@@ -422,6 +574,8 @@ class PDFMetadataEditor {
     }
 
     async handleFile(file) {
+        console.log('handleFile called with:', file);
+        
         // Clear any previous drag states
         const uploadArea = document.getElementById('uploadArea');
         if (uploadArea) {
@@ -430,6 +584,7 @@ class PDFMetadataEditor {
 
         // Validate file type
         if (file.type !== 'application/pdf') {
+            console.log('Invalid file type:', file.type);
             this.showToast('Please select a PDF file', 'error');
             return;
         }
@@ -444,15 +599,27 @@ class PDFMetadataEditor {
         this.currentFile = file;
         this.originalFileSize = file.size;
         
+        console.log('Starting PDF processing...');
+        console.log('Available libraries:', {
+            PDFLib: typeof PDFLib !== 'undefined',
+            pdfjsLib: typeof pdfjsLib !== 'undefined'
+        });
+        
         try {
             // Read file as array buffer
+            console.log('Reading file as array buffer...');
             const arrayBuffer = await file.arrayBuffer();
+            console.log('Array buffer read successfully, size:', arrayBuffer.byteLength);
             
             // Load PDF with pdf-lib for metadata manipulation
+            console.log('Loading PDF with pdf-lib...');
             this.pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+            console.log('pdf-lib loaded successfully');
             
             // Load PDF with PDF.js for viewing
+            console.log('Loading PDF with PDF.js...');
             this.currentPDF = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+            console.log('PDF.js loaded successfully');
             
             this.totalPages = this.currentPDF.numPages;
             this.isFileLoaded = true;
@@ -468,6 +635,15 @@ class PDFMetadataEditor {
             this.showViewerControls();
             this.showOptimizationSection();
             this.updateProcessButtonText();
+            
+            // Update compression engine options safely
+            try {
+                this.updateCompressionEngineOptions();
+                this.updateCompressionQualityIndicator();
+            } catch (error) {
+                console.warn('Error updating compression engine UI:', error);
+                // Continue without compression engine updates
+            }
             
             this.showToast('PDF loaded successfully', 'success');
             
@@ -834,234 +1010,496 @@ class PDFMetadataEditor {
             const compressionLevel = document.getElementById('compressionLevel');
             const level = compressionLevel ? compressionLevel.value : 'medium';
             
-            // Define compression settings for different levels
-            const compressionSettings = {
-                'light': {
-                    useObjectStreams: true,
-                    addDefaultPage: false,
-                    objectsPerTick: 50,
-                    updateFieldAppearances: false
-                },
-                'medium': {
-                    useObjectStreams: true,
-                    addDefaultPage: false,
-                    objectsPerTick: 100,
-                    updateFieldAppearances: false
-                },
-                'high': {
-                    useObjectStreams: true,
-                    addDefaultPage: false,
-                    objectsPerTick: 150,
-                    updateFieldAppearances: false
-                },
-                'extreme': {
-                    useObjectStreams: true,
-                    addDefaultPage: false,
-                    objectsPerTick: 200,
-                    updateFieldAppearances: false
-                }
-            };
-
-            const settings = compressionSettings[level] || compressionSettings.medium;
+            // Get the current PDF bytes (with updated metadata)
+            const saveOptions = this.compressionSettings || {};
+            const pdfBytes = this.modifiedPdfBytes || await this.pdfDoc.save(saveOptions);
             
-            // Simulate compression process
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Get the selected compression engine
+            const selectedEngine = this.getSelectedCompressionEngine();
             
-            // Store compression settings for final save
-            this.compressionSettings = settings;
-            this.compressionLevel = level;
+            let compressedBytes;
+            let engineUsed = selectedEngine;
             
-            this.showToast(`PDF compressed using ${level} quality settings`, 'info');
-        } catch (error) {
-            this.showToast('Compression failed, continuing without compression', 'warning');
-        }
-    }
-
-    showProcessingProgress(show) {
-        const processingProgress = document.getElementById('processingProgress');
-        if (processingProgress) {
-            processingProgress.style.display = show ? 'block' : 'none';
-        }
-
-        if (show) {
-            // Reset progress
-            this.updateProgress(0);
-            this.updateProgressStep(1, '');
-            this.updateProgressStep(2, '');
-            this.updateProgressStep(3, '');
-            this.updateProgressStep(4, '');
-        }
-    }
-
-    updateProgress(percent) {
-        const progressFill = document.getElementById('progressFill');
-        const progressPercent = document.getElementById('progressPercent');
-        
-        if (progressFill) {
-            progressFill.style.width = percent + '%';
-        }
-        if (progressPercent) {
-            progressPercent.textContent = Math.round(percent) + '%';
-        }
-    }
-
-    updateProgressStep(stepNumber, status) {
-        const step = document.getElementById(`step${stepNumber}`);
-        if (step) {
-            step.className = 'progress-step';
-            if (status) {
-                step.classList.add(status);
+            // Use the selected compression engine
+            switch (selectedEngine) {
+                case 'ghostscript':
+                    compressedBytes = await this.compressWithGhostscript(pdfBytes, level);
+                    engineUsed = 'Ghostscript';
+                    break;
+                case 'qpdf':
+                    compressedBytes = await this.compressWithQPDF(pdfBytes, level);
+                    engineUsed = 'QPDF';
+                    break;
+                case 'pdflib':
+                default:
+                    compressedBytes = await this.compressWithPDFLib(level);
+                    engineUsed = 'pdf-lib';
+                    break;
             }
             
-            // Update icon for completed steps
-            const icon = step.querySelector('.step-icon i');
-            if (icon && status === 'completed') {
-                icon.className = 'fas fa-check';
-            } else if (icon && status !== 'completed') {
-                // Reset to original icon based on step number
-                const originalIcons = {
-                    1: 'fas fa-edit',
-                    2: 'fas fa-compress-alt',
-                    3: 'fas fa-stream',
-                    4: 'fas fa-check'
-                };
-                icon.className = originalIcons[stepNumber] || 'fas fa-spinner fa-spin';
-            }
-        }
-    }
-
-    updateSizeComparison(optimizedSize) {
-        const optimizedSizeEl = document.getElementById('optimizedSize');
-        const sizeSavings = document.getElementById('sizeSavings');
-        const sizeComparison = document.getElementById('sizeComparison');
-
-        if (optimizedSizeEl) {
-            optimizedSizeEl.textContent = this.formatFileSize(optimizedSize);
-        }
-
-        if (sizeSavings) {
-            const difference = optimizedSize - this.originalFileSize;
-            const percentage = ((difference / this.originalFileSize) * 100).toFixed(1);
-            
-            if (difference > 0) {
-                sizeSavings.textContent = `+${this.formatFileSize(difference)} (+${percentage}%)`;
-                sizeSavings.style.color = 'var(--color-warning)';
+            if (compressedBytes) {
+                this.modifiedPdfBytes = compressedBytes;
+                this.updateSizeComparison(compressedBytes.length);
+                this.showToast(`PDF compressed using ${level} quality settings (${engineUsed})`, 'info');
             } else {
-                sizeSavings.textContent = `${this.formatFileSize(difference)} (${percentage}%)`;
-                sizeSavings.style.color = 'var(--color-success)';
+                this.showToast('Compression failed, continuing without compression', 'warning');
             }
-        }
-
-        if (sizeComparison) {
-            sizeComparison.style.display = 'block';
+            
+        } catch (error) {
+            this.showToast('Compression failed: ' + error.message, 'warning');
         }
     }
 
-    showProcessingResults() {
-        const downloadBtn = document.getElementById('downloadPdf');
-        const processBtn = document.getElementById('processDocument');
-        
-        if (downloadBtn) downloadBtn.style.display = 'inline-flex';
-        if (processBtn) processBtn.disabled = true;
-    }
-
-    async downloadPDF() {
-        if (!this.modifiedPdfBytes) {
-            this.showToast('No processed PDF to download', 'error');
-            return;
+    async compressWithQPDF(pdfBytes, level) {
+        if (!this.qpdfWasm) {
+            throw new Error('QPDF WASM not available');
         }
 
         try {
-            const blob = new Blob([this.modifiedPdfBytes], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
-            
-            const enableLinearization = document.getElementById('enableLinearization');
-            const isLinearized = enableLinearization && enableLinearization.checked;
-            
-            const a = document.createElement('a');
-            a.href = url;
-            const title = document.getElementById('title').value || 'document';
-            const suffix = isLinearized ? '_optimized' : '_metadata_updated';
-            a.download = `${title}${suffix}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            URL.revokeObjectURL(url);
-            
-            this.showToast('PDF downloaded successfully', 'success');
-            
-        } catch (error) {
-            this.showToast('Error downloading PDF: ' + error.message, 'error');
-        }
-    }
+            // Define QPDF compression arguments for different levels
+            const compressionArgs = {
+                'light': [
+                    '--compress-streams=y',
+                    '--object-streams=preserve',
+                    '--remove-unreferenced-resources=auto'
+                ],
+                'medium': [
+                    '--compress-streams=y',
+                    '--object-streams=generate',
+                    '--remove-unreferenced-resources=yes',
+                    '--optimize-images'
+                ],
+                'high': [
+                    '--compress-streams=y',
+                    '--object-streams=generate',
+                    '--remove-unreferenced-resources=yes',
+                    '--optimize-images',
+                    '--recompress-flate'
+                ],
+                'extreme': [
+                    '--compress-streams=y',
+                    '--object-streams=generate',
+                    '--remove-unreferenced-resources=yes',
+                    '--optimize-images',
+                    '--recompress-flate',
+                    '--normalize-content=y'
+                ]
+            };
 
-    resetForm() {
-        if (confirm('Are you sure you want to reset the form? This will clear all changes.')) {
-            const metadataForm = document.getElementById('metadataForm');
-            const customFields = document.getElementById('customFields');
-            const processBtn = document.getElementById('processDocument');
-            const downloadBtn = document.getElementById('downloadPdf');
-            const sizeComparison = document.getElementById('sizeComparison');
-            const processingProgress = document.getElementById('processingProgress');
+            const args = compressionArgs[level] || compressionArgs.medium;
             
-            if (metadataForm) metadataForm.reset();
-            if (customFields) customFields.innerHTML = '';
+            // Try different QPDF WASM API patterns
+            let compressedBytes;
             
-            this.customFieldCount = 0;
-            this.modifiedPdfBytes = null;
-            
-            if (processBtn) processBtn.disabled = false;
-            if (downloadBtn) downloadBtn.style.display = 'none';
-            if (sizeComparison) sizeComparison.style.display = 'none';
-            if (processingProgress) processingProgress.style.display = 'none';
-            
-            if (this.isFileLoaded) {
-                this.extractMetadata();
-                this.updateProcessButtonText();
+            if (this.qpdfWasm.FS && this.qpdfWasm.callMain) {
+                // Emscripten filesystem approach
+                compressedBytes = await this.compressWithQPDFFS(pdfBytes, args);
+            } else if (this.qpdfWasm.run) {
+                // Command-line style run method
+                compressedBytes = await this.qpdfWasm.run(args, new Uint8Array(pdfBytes));
+            } else if (this.qpdfWasm.compress) {
+                // Direct compress method
+                compressedBytes = await this.qpdfWasm.compress(new Uint8Array(pdfBytes), args);
+            } else {
+                throw new Error('Unknown QPDF WASM API - no supported compression methods found');
             }
             
-            this.showToast('Form reset', 'info');
-        }
-    }
-
-    showLoading(show, text = 'Processing PDF...') {
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const loadingText = document.getElementById('loadingText');
-        
-        if (loadingOverlay) {
-            loadingOverlay.style.display = show ? 'flex' : 'none';
-        }
-        if (loadingText && text) {
-            loadingText.textContent = text;
-        }
-    }
-
-    showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        if (toast) {
-            toast.textContent = message;
-            toast.className = `toast ${type}`;
-            toast.style.display = 'block';
+            if (!compressedBytes || compressedBytes.length === 0) {
+                throw new Error('QPDF compression produced empty result');
+            }
             
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 4000);
+            return compressedBytes.buffer || compressedBytes;
+            
+        } catch (error) {
+            throw new Error('QPDF compression failed: ' + error.message);
         }
     }
 
-    formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(Math.abs(bytes)) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    async compressWithQPDFFS(pdfBytes, args) {
+        // Emscripten filesystem-based approach for compression
+        const inputFileName = 'input.pdf';
+        const outputFileName = 'output_compressed.pdf';
+        
+        try {
+            // Write input file
+            this.qpdfWasm.FS.writeFile(inputFileName, new Uint8Array(pdfBytes));
+            
+            // Build command arguments
+            const commandArgs = [...args, inputFileName, outputFileName];
+            
+            // Run qpdf compression command
+            const result = this.qpdfWasm.callMain(commandArgs);
+            
+            if (result !== 0) {
+                throw new Error(`QPDF compression failed with exit code: ${result}`);
+            }
+            
+            // Read the compressed PDF
+            const compressedBytes = this.qpdfWasm.FS.readFile(outputFileName);
+            
+            // Clean up files
+            try {
+                this.qpdfWasm.FS.unlink(inputFileName);
+                this.qpdfWasm.FS.unlink(outputFileName);
+            } catch (cleanupError) {
+                // Ignore cleanup errors
+            }
+            
+            return compressedBytes;
+            
+        } catch (error) {
+            // Attempt cleanup on error
+            try {
+                this.qpdfWasm.FS.unlink(inputFileName);
+                this.qpdfWasm.FS.unlink(outputFileName);
+            } catch (cleanupError) {
+                // Ignore cleanup errors
+            }
+            throw error;
+        }
+    }
+
+    async compressWithPDFLib(level) {
+        // Fallback compression using pdf-lib for when QPDF is not available
+        const compressionSettings = {
+            'light': {
+                useObjectStreams: true,
+                addDefaultPage: false,
+                objectsPerTick: 50,
+                updateFieldAppearances: false
+            },
+            'medium': {
+                useObjectStreams: true,
+                addDefaultPage: false,
+                objectsPerTick: 100,
+                updateFieldAppearances: false
+            },
+            'high': {
+                useObjectStreams: true,
+                addDefaultPage: false,
+                objectsPerTick: 150,
+                updateFieldAppearances: false
+            },
+            'extreme': {
+                useObjectStreams: true,
+                addDefaultPage: false,
+                objectsPerTick: 200,
+                updateFieldAppearances: false
+            }
+        };
+
+        const settings = compressionSettings[level] || compressionSettings.medium;
+        
+        // Store compression settings for final save
+        this.compressionSettings = settings;
+        this.compressionLevel = level;
+        
+        // Return compressed bytes using pdf-lib
+        return await this.pdfDoc.save(settings);
+    }
+
+    async compressWithGhostscript(pdfBytes, level) {
+        if (!this.ghostscriptWasm) {
+            throw new Error('Ghostscript WASM not available');
+        }
+
+        try {
+            // Define Ghostscript compression parameters for different levels
+            const compressionParams = {
+                'light': {
+                    imageQuality: 0.9,
+                    colorImageResolution: 300,
+                    grayImageResolution: 300,
+                    monoImageResolution: 1200,
+                    compressPages: true,
+                    compressImages: true,
+                    embedAllFonts: true
+                },
+                'medium': {
+                    imageQuality: 0.75,
+                    colorImageResolution: 200,
+                    grayImageResolution: 200,
+                    monoImageResolution: 1200,
+                    compressPages: true,
+                    compressImages: true,
+                    embedAllFonts: true
+                },
+                'high': {
+                    imageQuality: 0.6,
+                    colorImageResolution: 150,
+                    grayImageResolution: 150,
+                    monoImageResolution: 1200,
+                    compressPages: true,
+                    compressImages: true,
+                    embedAllFonts: true
+                },
+                'extreme': {
+                    imageQuality: 0.4,
+                    colorImageResolution: 100,
+                    grayImageResolution: 100,
+                    monoImageResolution: 600,
+                    compressPages: true,
+                    compressImages: true,
+                    embedAllFonts: false
+                }
+            };
+
+            const params = compressionParams[level] || compressionParams.medium;
+            
+            // Build Ghostscript command arguments
+            const args = [
+                'gs',
+                '-sDEVICE=pdfwrite',
+                '-dCompatibilityLevel=1.4',
+                '-dPDFSETTINGS=/printer',
+                '-dNOPAUSE',
+                '-dQUIET',
+                '-dBATCH',
+                '-dSAFER',
+                '-dAutoRotatePages=/None',
+                '-dAutoFilterColorImages=false',
+                '-dAutoFilterGrayImages=false',
+                '-dOptimize=true',
+                '-dEmbedAllFonts=' + (params.embedAllFonts ? 'true' : 'false'),
+                '-dSubsetFonts=true',
+                '-dCompressPages=' + (params.compressPages ? 'true' : 'false'),
+                '-dUseFlateCompression=true',
+                '-dColorImageFilter=/DCTEncode',
+                '-dGrayImageFilter=/DCTEncode',
+                '-dMonoImageFilter=/CCITTFaxEncode',
+                `-dColorImageResolution=${params.colorImageResolution}`,
+                `-dGrayImageResolution=${params.grayImageResolution}`,
+                `-dMonoImageResolution=${params.monoImageResolution}`,
+                `-dJPEGQ=${Math.round(params.imageQuality * 100)}`,
+                '-sOutputFile=output.pdf',
+                'input.pdf'
+            ];
+
+            // Use Ghostscript WASM to compress PDF
+            let compressedBytes;
+            
+            if (this.ghostscriptWasm.FS && this.ghostscriptWasm.callMain) {
+                // Emscripten filesystem approach
+                compressedBytes = await this.compressWithGhostscriptFS(pdfBytes, args);
+            } else if (this.ghostscriptWasm.compress) {
+                // Direct compress method
+                compressedBytes = await this.ghostscriptWasm.compress(new Uint8Array(pdfBytes), params);
+            } else {
+                throw new Error('Unknown Ghostscript WASM API - no supported compression methods found');
+            }
+            
+            if (!compressedBytes || compressedBytes.length === 0) {
+                throw new Error('Ghostscript compression produced empty result');
+            }
+            
+            return compressedBytes.buffer || compressedBytes;
+            
+        } catch (error) {
+            throw new Error('Ghostscript compression failed: ' + error.message);
+        }
+    }
+
+    async compressWithGhostscriptFS(pdfBytes, args) {
+        // Emscripten filesystem-based approach for Ghostscript compression
+        const inputFileName = 'input.pdf';
+        const outputFileName = 'output.pdf';
+        
+        try {
+            // Write input file
+            this.ghostscriptWasm.FS.writeFile(inputFileName, new Uint8Array(pdfBytes));
+            
+            // Run Ghostscript compression command
+            const result = this.ghostscriptWasm.callMain(args);
+            
+            if (result !== 0) {
+                throw new Error(`Ghostscript compression failed with exit code: ${result}`);
+            }
+            
+            // Read the compressed PDF
+            const compressedBytes = this.ghostscriptWasm.FS.readFile(outputFileName);
+            
+            // Clean up files
+            try {
+                this.ghostscriptWasm.FS.unlink(inputFileName);
+                this.ghostscriptWasm.FS.unlink(outputFileName);
+            } catch (cleanupError) {
+                // Ignore cleanup errors
+            }
+            
+            return compressedBytes;
+            
+        } catch (error) {
+            // Attempt cleanup on error
+            try {
+                this.ghostscriptWasm.FS.unlink(inputFileName);
+                this.ghostscriptWasm.FS.unlink(outputFileName);
+            } catch (cleanupError) {
+                // Ignore cleanup errors
+            }
+            throw error;
+        }
+    }
+
+    updateCompressionEngineOptions() {
+        const compressionEngine = document.getElementById('compressionEngine');
+        if (!compressionEngine) return;
+
+        try {
+            // Enable/disable options based on availability
+            const options = compressionEngine.options;
+            
+            for (let i = 0; i < options.length; i++) {
+                const option = options[i];
+                const engine = option.value;
+                
+                switch (engine) {
+                    case 'ghostscript':
+                        option.disabled = !this.ghostscriptWasm;
+                        option.title = this.ghostscriptWasm ? 'Ghostscript WASM loaded' : 'Ghostscript WASM not available';
+                        break;
+                    case 'qpdf':
+                        option.disabled = !this.qpdfWasm;
+                        option.title = this.qpdfWasm ? 'QPDF WASM loaded' : 'QPDF WASM not available';
+                        break;
+                    case 'pdflib':
+                        option.disabled = false;
+                        option.title = 'pdf-lib always available';
+                        break;
+                    case 'auto':
+                        option.disabled = false;
+                        option.title = 'Automatically select best available engine';
+                        break;
+                }
+            }
+
+            // If current selection is disabled, switch to auto
+            if (compressionEngine.selectedOptions[0] && compressionEngine.selectedOptions[0].disabled) {
+                compressionEngine.value = 'auto';
+            }
+        } catch (error) {
+            console.warn('Error updating compression engine options:', error);
+        }
+    }
+
+    updateCompressionQualityIndicator() {
+        const compressionEngine = document.getElementById('compressionEngine');
+        const compressionQuality = document.getElementById('compressionQuality');
+        
+        if (!compressionEngine || !compressionQuality) return;
+
+        try {
+            const selectedEngine = compressionEngine.value;
+            
+            switch (selectedEngine) {
+                case 'auto':
+                    if (this.ghostscriptWasm) {
+                        compressionQuality.textContent = 'Auto → Ghostscript';
+                        compressionQuality.style.color = 'var(--color-error)';
+                        compressionQuality.title = 'Using Ghostscript for maximum aggressive compression';
+                    } else if (this.qpdfWasm) {
+                        compressionQuality.textContent = 'Auto → QPDF';
+                        compressionQuality.style.color = 'var(--color-success)';
+                        compressionQuality.title = 'Using QPDF for superior compression';
+                    } else {
+                        compressionQuality.textContent = 'Auto → pdf-lib';
+                        compressionQuality.style.color = 'var(--color-warning)';
+                        compressionQuality.title = 'Using pdf-lib for basic compression';
+                    }
+                    break;
+                case 'ghostscript':
+                    if (this.ghostscriptWasm) {
+                        compressionQuality.textContent = 'Ghostscript Aggressive';
+                        compressionQuality.style.color = 'var(--color-error)';
+                        compressionQuality.title = 'Using Ghostscript for maximum aggressive compression';
+                    } else {
+                        compressionQuality.textContent = 'Ghostscript Unavailable';
+                        compressionQuality.style.color = 'var(--color-text-secondary)';
+                        compressionQuality.title = 'Ghostscript WASM not loaded';
+                    }
+                    break;
+                case 'qpdf':
+                    if (this.qpdfWasm) {
+                        compressionQuality.textContent = 'QPDF Enhanced';
+                        compressionQuality.style.color = 'var(--color-success)';
+                        compressionQuality.title = 'Using QPDF for superior compression';
+                    } else {
+                        compressionQuality.textContent = 'QPDF Unavailable';
+                        compressionQuality.style.color = 'var(--color-text-secondary)';
+                        compressionQuality.title = 'QPDF WASM not loaded';
+                    }
+                    break;
+                case 'pdflib':
+                    compressionQuality.textContent = 'pdf-lib Basic';
+                    compressionQuality.style.color = 'var(--color-warning)';
+                    compressionQuality.title = 'Using pdf-lib for basic compression';
+                    break;
+            }
+        } catch (error) {
+            console.warn('Error updating compression quality indicator:', error);
+        }
+    }
+
+    getSelectedCompressionEngine() {
+        const compressionEngine = document.getElementById('compressionEngine');
+        if (!compressionEngine) return 'auto';
+
+        const selectedEngine = compressionEngine.value;
+        
+        // If auto is selected, determine the best available engine
+        if (selectedEngine === 'auto') {
+            if (this.ghostscriptWasm) return 'ghostscript';
+            if (this.qpdfWasm) return 'qpdf';
+            return 'pdflib';
+        }
+        
+        // If specific engine is selected, verify it's available
+        switch (selectedEngine) {
+            case 'ghostscript':
+                return this.ghostscriptWasm ? 'ghostscript' : 'pdflib';
+            case 'qpdf':
+                return this.qpdfWasm ? 'qpdf' : 'pdflib';
+            case 'pdflib':
+                return 'pdflib';
+            default:
+                return 'pdflib';
+        }
+    }
+
+    // Debug method for checking library status
+    checkLibraryStatus() {
+        const status = {
+            pdfjsLib: typeof pdfjsLib !== 'undefined',
+            PDFLib: typeof PDFLib !== 'undefined',
+            qpdfWasm: this.qpdfWasm !== null,
+            ghostscriptWasm: this.ghostscriptWasm !== null,
+            ghostscriptGlobals: {
+                createGhostscriptWasm: typeof createGhostscriptWasm !== 'undefined',
+                GhostscriptWasm: typeof GhostscriptWasm !== 'undefined',
+                ghostscriptWasm: typeof ghostscriptWasm !== 'undefined',
+                gs: typeof gs !== 'undefined',
+                window_gs: window.gs !== undefined,
+                window_ghostscriptWasm: window.ghostscriptWasm !== undefined
+            }
+        };
+        
+        console.log('Library Status:', status);
+        return status;
     }
 }
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new PDFMetadataEditor();
+    console.log('DOM loaded, initializing app...');
+    const app = new PDFMetadataEditor();
+    
+    // Expose app instance for debugging
+    window.pdfApp = app;
+    window.testQPDFCompression = () => app.testQPDFCompression();
+    window.testGhostscriptCompression = () => app.testGhostscriptCompression();
+    window.compareCompressionMethods = () => app.compareCompressionMethods();
+    window.checkLibraryStatus = () => app.checkLibraryStatus();
+    
+    console.log('App initialized and exposed to window');
 });
 
 // Handle uncaught errors

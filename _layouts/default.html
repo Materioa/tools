@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container {{ page.container_class }}">
+        {% unless page.hide_header %}
+        <header class="header">
+            <h1>{{ site.title }}</h1>
+            <p class="header__subtitle">{{ site.description }}</p>
+        </header>
+        {% endunless %}
+
+        {{ content }}
+    </div>
+</body>
+
+</html>

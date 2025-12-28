@@ -1,0 +1,378 @@
+/* Shared CSS for all Netwrck AI Tools */
+
+/* Common tool styles */
+body {
+    background: white !important;
+}
+
+#mainbody {
+    min-height: unset !important;
+}
+
+/* Footer is visible on tools pages */
+.mdl-mega-footer {
+    visibility: visible;
+}
+
+/* Common input and button styles */
+.mdl-textfield__input {
+    padding: 4px 8px;
+    font-size: 16px;
+    line-height: 24px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background: transparent;
+}
+
+.createaiimageprompt {
+    padding: 4px 8px !important;
+    width: 100%;
+    max-width: 100%;
+    font-size: 14px;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+/* Typeahead styling */
+#remote .typeahead,
+#remote .tt-query,
+#remote .tt-hint {
+    padding: 4px 8px;
+    width: 100%;
+    height: 40px;
+    font-size: 16px;
+    line-height: 24px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    outline: none;
+}
+
+#remote .typeahead:focus {
+    border: 1px solid #f17d34;
+}
+
+.tt-menu {
+    transform: translate(-36px, 0) !important;
+}
+
+.tt-dropdown-menu {
+    font-size: 12px;
+    padding: 4px;
+}
+
+.tt-suggestion {
+    font-size: 12px;
+    padding: 4px 6px;
+}
+
+/* Input wrapper layouts */
+.input-button-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    margin: 10px auto;
+}
+
+.input-container {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Common button styles */
+.make-art-button-container {
+    width: 100%;
+    text-align: center;
+    margin: 15px auto;
+}
+
+.make-art-button,
+.generate-voice-button,
+.create-ai-image-button {
+    padding: 0 24px;
+    font-size: 16px;
+    text-transform: none;
+    background-color: #f17d34;
+    color: white;
+}
+
+/* Drop zone styles */
+.drop-zone {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.drop-zone:hover {
+    border-color: #f17d34;
+}
+
+.drop-zone-small {
+    padding: 10px;
+}
+
+.drop-zone__input {
+    display: none;
+}
+
+/* Loading progress */
+.loading-progress {
+    display: none;
+    width: 100%;
+}
+
+/* Created content lists */
+.created-images-list {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto !important;
+}
+
+/* Layout containers */
+.demo-container.mdl-grid {
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
+.demo-main {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
+.main-game-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
+.mdl-layout__content {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
+.mdl-cell--12-col {
+    width: 100% !important;
+}
+
+.mdl-textfield {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+#remote {
+    width: 100%;
+    margin: 0 auto;
+}
+
+#remote .twitter-typeahead {
+    width: 100% !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .resolution-radio-elem {
+        font-size: 14px;
+    }
+
+    .chip-p {
+        font-size: 12px;
+    }
+
+    .right-dd {
+        font-size: 11px;
+    }
+
+    .ar-ar {
+        font-size: 11px;
+    }
+
+    .resolution-header {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .demo-content {
+        padding: 10px !important;
+    }
+
+    .demo-crumbs {
+        font-size: 12px;
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 580px) {
+    .resolutions-ai {
+        margin: 0 auto;
+        padding: 10px 5px;
+        width: 100% !important;
+        max-width: 326px !important;
+        border-radius: 0;
+    }
+
+    .resolution-radio-elem {
+        font-size: 12px;
+        margin-bottom: 5px;
+        padding: 5px 0;
+    }
+
+    .chip-p {
+        font-size: 11px;
+        padding: 5px;
+    }
+
+    .right-dd {
+        font-size: 10px;
+    }
+
+    .ar-ar {
+        font-size: 10px;
+    }
+
+    .resolution-header {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .main-game-wrapper {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+
+    .demo-container {
+        padding: 0;
+        width: 100%;
+    }
+
+    .demo-content {
+        padding: 5px !important;
+        box-shadow: none !important;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .createaiimageprompt {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .tt-input,
+    .tt-hint {
+        font-size: 12px;
+    }
+
+    .typeahead {
+        min-height: 36px;
+    }
+
+    .demo-ribbon {
+        height: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .demo-main {
+        margin-top: 0;
+        width: 100%;
+    }
+
+    .demo-container.mdl-grid {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+
+    .input-button-wrapper {
+        margin: 8px auto;
+    }
+
+    #remote .typeahead,
+    #remote .tt-query,
+    #remote .tt-hint {
+        height: 36px;
+        padding: 4px 6px;
+        font-size: 13px;
+        line-height: 20px;
+    }
+
+    .mdl-textfield__input {
+        padding: 4px 6px;
+        font-size: 13px;
+        line-height: 20px;
+        height: 36px;
+    }
+
+    .make-art-button,
+    .generate-voice-button {
+        font-size: 14px;
+        padding: 0 16px;
+    }
+
+    .tt-input,
+    .tt-hint,
+    .createaiimageprompt,
+    .mdl-textfield__input {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+}
+
+/* Animation classes */
+.recording {
+    color: red;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Audio and media styles */
+.audio-preview {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.text-to-speak {
+    width: 100%;
+    min-height: 100px;
+    margin: 10px 0;
+}
+
+.record-button {
+    margin: 10px 0;
+}

@@ -1,0 +1,1075 @@
+body {
+    font-family: 'Roboto', 'Helvetica', sans-serif;
+}
+
+/* AI character item hover styles - hide name by default on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+    .ai-character-item .ai-name {
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ai-character-item:hover .ai-name {
+        opacity: 1;
+    }
+}
+
+/* Shake animation for login errors */
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-10px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(10px);
+    }
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+/* Auth error styling */
+#auth-error,
+#signup-error {
+    color: #d32f2f;
+    font-size: 12px;
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+/* Fix for stretched header logo */
+.mdl-layout__header .mdl-layout-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mdl-layout__header .ws-header--logo {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+/* Subscribe button styling - orange/purple gradient */
+.subscribe-btn,
+.header-subscribe {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 25%, #e97826 50%, #d34972 100%) !important;
+    color: white !important;
+    font-weight: 500 !important;
+    padding: 6px 16px !important;
+    border-radius: 4px !important;
+    transition: all 0.3s ease !important;
+    text-transform: none !important;
+}
+
+.subscribe-btn:hover,
+.header-subscribe:hover {
+    background: linear-gradient(135deg, #ff7f50 0%, #ff8c2a 25%, #f28330 50%, #d45dd4 75%, #b565ff 100%) !important;
+    box-shadow: 0 2px 8px rgba(199, 78, 192, 0.3) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Mobile drawer subscribe button */
+.mdl-layout__drawer .subscribe-btn,
+.mdl-layout__drawer .header-subscribe {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 25%, #e97826 50%, #c44ec0 75%, #a855f7 100%) !important;
+    color: white !important;
+}
+
+.mdl-layout__drawer .subscribe-btn:hover,
+.mdl-layout__drawer .header-subscribe:hover {
+    background: linear-gradient(135deg, #ff7f50 0%, #ff8c2a 25%, #f28330 50%, #d45dd4 75%, #b565ff 100%) !important;
+}
+
+/* Aesthetic Elf Styles Dialog Chips */
+.elf-style-chip {
+    position: relative;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 8px 4px !important;
+    height: 120px !important;
+    width: 100% !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.elf-style-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.elf-style-chip .elf-style-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 0 !important;
+    display: block;
+}
+
+.elf-style-chip .mdl-chip__text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0 0 8px 8px;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    font-size: 13px;
+    text-align: center;
+    z-index: 2;
+}
+
+/* Add vertical spacing to the parent container */
+.create-ai-cats-internal .ai-categories {
+    margin-bottom: 12px !important;
+}
+
+/* Ensure the grid cells stretch properly */
+.create-ai-cats-internal .mdl-cell--1-col {
+    min-width: 120px;
+    max-width: 150px;
+}
+
+/* Masonry Layout for AI Character Lists - CSS columns for true masonry */
+.ai-character-grid {
+    column-count: 2;
+    column-gap: 12px;
+    padding: 8px;
+}
+
+@media (min-width: 600px) {
+    .ai-character-grid {
+        column-count: 3;
+        column-gap: 14px;
+    }
+}
+
+@media (min-width: 900px) {
+    .ai-character-grid {
+        column-count: 4;
+        column-gap: 16px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .ai-character-grid {
+        column-count: 5;
+        column-gap: 16px;
+    }
+}
+
+@media (min-width: 1600px) {
+    .ai-character-grid {
+        column-count: 6;
+        column-gap: 18px;
+    }
+}
+
+/* AI Character Item - Full Image with Overlay Title */
+.ai-character-grid .ai-character-item {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: block;
+    break-inside: avoid;
+    margin-bottom: 12px;
+    padding: 0 !important;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+    isolation: isolate;
+}
+
+@media (min-width: 600px) {
+    .ai-character-grid .ai-character-item {
+        margin-bottom: 14px;
+    }
+}
+
+@media (min-width: 900px) {
+    .ai-character-grid .ai-character-item {
+        margin-bottom: 16px;
+    }
+}
+
+.ai-character-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Size classes - let images determine natural height in column layout */
+.ai-character-grid .ai-character-item.size-small,
+.ai-character-grid .ai-character-item.size-medium,
+.ai-character-grid .ai-character-item.landscape,
+.ai-character-grid .ai-character-item.wide-single,
+.ai-character-grid .ai-character-item.portrait,
+.ai-character-grid .ai-character-item.tall-single,
+.ai-character-grid .ai-character-item.square {
+    /* Let natural image dimensions determine height */
+}
+
+/* Content container for image */
+.ai-character-item .mdl-list__item-primary-content {
+    display: block;
+    padding: 0;
+    position: relative;
+}
+
+/* Override MDL chip background colors */
+.ai-character-item .mdl-chip__contact.mdl-list__item-avatar,
+.mdl-chip__contact.mdl-list__item-avatar {
+    background-color: transparent !important;
+}
+
+/* Ensure no background colors show through for all chip-related elements */
+.ai-character-item .mdl-chip__contact,
+.ai-character-item .mdl-list__item-avatar {
+    background-color: transparent !important;
+    background: none !important;
+}
+
+/* Avatar section */
+.ai-character-item .mdl-chip__contact {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background-color: transparent !important;
+    display: block;
+    box-sizing: border-box;
+}
+
+.ai-avatar-icon {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: none;
+    transition: transform 0.2s ease;
+    border-radius: 12px;
+    box-sizing: border-box;
+    background-color: #f0f0f0;
+    background-image: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+/* For images that should fill the container completely */
+.ai-character-item.fill-image .ai-avatar-icon {
+    object-fit: cover;
+}
+
+/* For portrait images, use cover to avoid letterboxing */
+.ai-character-item.portrait .ai-avatar-icon {
+    object-fit: cover;
+    object-position: center top;
+}
+
+/* For landscape images, use cover to avoid pillarboxing */
+.ai-character-item.landscape .ai-avatar-icon {
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Remove loading animation once image loads */
+/* This rule is now defined above with loading animation */
+
+/* Loading shimmer animation */
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Removed size-large specific rule */
+
+.ai-character-item:hover .ai-avatar-icon {
+    transform: scale(1.05);
+    /* Slight zoom on hover */
+}
+
+/* Title pill - overlay on image with more horizontal space */
+.ai-name {
+    position: absolute;
+    bottom: 12px;
+    /* Back to image overlay position */
+    left: 8px;
+    right: 8px;
+    /* More horizontal space */
+    height: auto;
+    /* Allow height to adjust */
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.3;
+    color: white;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 8px 12px;
+    border-radius: 16px;
+    /* Pill shape */
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+
+    /* Allow text wrapping for longer titles */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    /* Allow 2 lines for longer titles */
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+}
+
+/* Alternative light pill for bright images */
+.ai-character-item.light-overlay .ai-name {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Description - regular text at bottom (not a pill) */
+.mdl-list__item-text-body {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 2px;
+    right: 0;
+    height: 100px;
+    /* Dedicated bottom space */
+    background: rgba(255, 255, 255, 0.78);
+    /* Nearly opaque background */
+    /* padding: 12px 16px; */
+    border-radius: 0 0 12px 12px;
+    /* Only round bottom corners */
+    color: #333;
+    font-size: 11px;
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    /* More lines for full description */
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    z-index: 0;
+    /* Behind title pill */
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Hide description area when empty */
+.mdl-list__item-text-body:empty {
+    display: none;
+}
+
+/* Description pill on bright images - darker background for contrast */
+.ai-character-item.light-overlay .mdl-list__item-text-body {
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Gradient overlay for better title readability on image */
+.ai-character-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.3));
+    border-radius: 0 0 12px 12px;
+    z-index: 1;
+    /* Behind title pill but above image */
+    pointer-events: none;
+}
+
+/* Hide gradient when description exists (handled by JS class) */
+.ai-character-item.has-description::after {
+    display: none;
+}
+
+/* Enhanced hover effects */
+.ai-character-item:hover::after {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+    /* Stronger gradient on hover */
+}
+
+.ai-character-item:hover .ai-name {
+    background: rgba(0, 0, 0, 0.85);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Hover effect for description text area */
+.ai-character-item:hover .mdl-list__item-text-body {
+    background: rgba(255, 255, 255, 1);
+    /* Fully opaque on hover */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Light overlay variant hover */
+.ai-character-item.light-overlay:hover .ai-name {
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Ensure proper stacking */
+.ai-character-item {
+    isolation: isolate;
+    /* Create stacking context */
+}
+
+/* Text content - make it more prominent */
+.ai-name {
+    font-weight: 600;
+    /* Bolder text */
+    font-size: 15px;
+    /* Larger text */
+    line-height: 1.2;
+    margin-bottom: 6px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    color: #dcdcdc;
+    text-align: center;
+    /* Center the text */
+    flex-shrink: 0;
+    /* Don't shrink */
+}
+
+/* Removed duplicate mdl-list__item-text-body rule - using main pill definition above */
+
+/* Responsive text adjustments */
+@media (max-width: 840px) {
+    .ai-name {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ai-name {
+        font-size: 12px;
+        padding: 5px 8px;
+    }
+}
+
+/* AI Chatbot Card Styling */
+.ai-bot-item {
+    margin-bottom: 20px;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.ai-bot-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff;
+    position: relative;
+}
+
+.ai-bot-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.ai-avatar-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    object-position: center top;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background-color: #f5f5f5;
+}
+
+.ai-bot-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 100px;
+}
+
+.ai-bot-info h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ai-bot-info p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    max-height: 60px;
+}
+
+/* Also fix the AI character item in list view */
+.ai-character-item {
+    margin-bottom: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    background-color: #fff;
+    overflow: hidden;
+    /* padding: 12px !important; */
+    min-height: 240px;
+    background: transparent;
+}
+
+.ai-character-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+}
+
+/* Removed duplicate ai-avatar-icon rule - using main definition above */
+
+.ai-name {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
+}
+
+/* Removed another duplicate mdl-list__item-text-body rule - using main pill definition */
+
+/* All search data grid layout fix */
+.all-search-data {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+/* Medium screens */
+@media (max-width: 840px) and (min-width: 480px) {
+    .ai-avatar-image {
+        height: 180px;
+    }
+
+    .ai-bot-info {
+        min-height: 80px;
+    }
+}
+
+/* Small screens */
+@media (max-width: 479px) {
+    .ai-avatar-image {
+        height: 160px;
+    }
+
+    .ai-bot-info {
+        min-height: 70px;
+    }
+
+    .ai-bot-info h3 {
+        font-size: 16px;
+    }
+
+    .ai-bot-info p {
+        font-size: 13px;
+        -webkit-line-clamp: 2;
+    }
+}
+
+/* Modal dialog styling fixes */
+.mdl-dialog {
+    min-width: 300px !important;
+    /* width: 30vw !important; */
+    /* max-width: 600px !important; */
+}
+
+/* Modal background blur effect */
+:root {
+    --modal-blur-amount: 3px;
+}
+
+body.modal-blur>*:not(dialog) {
+    filter: blur(var(--modal-blur-amount));
+    transition: filter 0.2s ease-in-out;
+}
+
+body.modal-blur dialog {
+    filter: none !important;
+}
+
+/* For fullscreen modals on mobile */
+.mdl-dialog--phone-fullscreen {
+    width: 98% !important;
+    height: 98% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
+
+/* Auth dialogs specific styling */
+#login-dialog,
+#signup-dialog {
+    min-width: 300px !important;
+    width: 30vw !important;
+    max-width: 500px !important;
+}
+
+/* Mobile responsive modal sizing */
+@media (max-width: 768px) {
+    .mdl-dialog {
+        width: 90vw !important;
+        min-width: 280px !important;
+    }
+
+    #login-dialog,
+    #signup-dialog {
+        width: 90vw !important;
+        min-width: 280px !important;
+    }
+}
+
+/* Remove unused old styles - cleanup */
+.example-ai-cats .ai-character-grid .ai-character-item .mdl-list__item-primary-content,
+.ai-character-grid .ai-character-item .mdl-list__item-primary-content {
+    padding: 0;
+    /* Override any old padding */
+}
+
+.example-ai-cats .ai-character-grid .ai-character-item .mdl-chip__contact,
+.ai-character-grid .ai-character-item .mdl-chip__contact {
+    margin: 0;
+    /* Override any old margin */
+}
+
+/* Performance optimization - will-change for animations */
+.ai-character-item,
+.ai-avatar-icon,
+.ai-name {
+    will-change: transform;
+}
+
+/* Removed duplicate ai-avatar-icon loading rule - consolidated into main rule above */
+
+.ai-avatar-icon[src] {
+    background: none;
+    animation: none;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* AI Character Creation Form Styles */
+.newuserdropzone {
+    margin-bottom: 20px;
+}
+
+.newuserdropzone .mdl-textfield {
+    display: block;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.newuserdropzone .mdl-textfield__input {
+    width: 100%;
+}
+
+.newuserdropzone textarea {
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-family: 'Roboto', 'Helvetica', sans-serif;
+    font-size: 14px;
+    resize: vertical;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+.newuserdropzone textarea:focus {
+    outline: none;
+    border-color: #3f51b5;
+    box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.1);
+}
+
+.newuserdropzone textarea::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+/* Fix MDL textfield spacing */
+.newuserdropzone .mdl-textfield {
+    padding: 20px 0;
+}
+
+/* Avatar upload section */
+.newuserdropzone .new-ai-avatar-upload {
+    display: inline-block;
+    margin-right: 16px;
+    margin-bottom: 16px;
+    vertical-align: middle;
+}
+
+.newuserdropzone .new-ai-avatar-upload img {
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Checkbox alignment */
+.newuserdropzone .mdl-checkbox {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+/* General form spacing in dialogs */
+dialog .mdl-list__item-primary-content {
+    display: block;
+    width: 100%;
+}
+
+dialog .drop-zone {
+    margin-bottom: 20px;
+}
+
+/* Ensure proper spacing between form elements */
+#ainameme,
+#aigreetingme,
+#aidescriptionme {
+    margin-bottom: 20px \!important;
+}
+
+/* Fix textarea containers */
+.mdl-textfield:has(textarea) {
+    width: 100%;
+    padding: 0;
+    margin-bottom: 16px;
+}
+
+/* Override MDL default styles for better spacing */
+dialog .mdl-textfield.is-upgraded {
+    padding-bottom: 20px;
+}
+
+/* Blog article card wrapper (for slugs without demo-content container) */
+#mainbody article.blog-article {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 80px auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    padding: 24px;
+    color: #424242;
+}
+
+@media (max-width: 700px) {
+    #mainbody article.blog-article {
+        padding: 16px;
+        margin: 0 auto 40px auto;
+        border-radius: 2px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+}
+
+#mainbody article.blog-article header {
+    margin-bottom: 16px;
+}
+
+#mainbody article.blog-article h1,
+#mainbody article.blog-article h2,
+#mainbody article.blog-article h3 {
+    color: #333;
+}
+
+#mainbody article.blog-article section {
+    margin: 16px 0;
+}
+
+/* Responsive: allow 4/5/6 columns in autocomplete grid on wide screens */
+@media (min-width: 1300px) {
+    #autoCompleteUsersList .ai-character-item.mdl-cell {
+        -webkit-flex: 0 0 25% !important;
+        -ms-flex: 0 0 25% !important;
+        flex: 0 0 25% !important;
+        /* 4 columns */
+        width: 25% !important;
+        max-width: 25% !important;
+    }
+}
+
+@media (min-width: 1600px) {
+    #autoCompleteUsersList .ai-character-item.mdl-cell {
+        -webkit-flex: 0 0 20% !important;
+        -ms-flex: 0 0 20% !important;
+        flex: 0 0 20% !important;
+        /* 5 columns */
+        width: 20% !important;
+        max-width: 20% !important;
+    }
+}
+
+@media (min-width: 1920px) {
+    #autoCompleteUsersList .ai-character-item.mdl-cell {
+        -webkit-flex: 0 0 16.6667% !important;
+        -ms-flex: 0 0 16.6667% !important;
+        flex: 0 0 16.6667% !important;
+        /* 6 columns */
+        width: 16.6667% !important;
+        max-width: 16.6667% !important;
+    }
+}
+
+EOF < /dev/null
+
+/* Only on AI Chatbots listing contexts */
+.all-search-data .ai-character-item .mdl-list__item-primary-content {
+    margin-right: 33px;
+}
+
+/* Alternatives pages list styling */
+.demo-content ul,
+.demo-content ol {
+    margin: 16px 0;
+    padding-left: 20px;
+    text-align: left;
+}
+
+.demo-content ul li,
+.demo-content ol li {
+    margin: 8px 0;
+    text-align: left;
+}
+
+.demo-content ul {
+    list-style-type: disc;
+}
+
+.demo-content ol {
+    list-style-type: decimal;
+}
+
+/* Header Credits Display */
+.header-credits {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 20px;
+    padding: 4px 8px 4px 12px;
+    margin-right: 8px;
+    margin-left: 8px;
+}
+
+.credits-balance {
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
+.credits-add-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: white !important;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    line-height: 24px !important;
+}
+
+.credits-add-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
+.credits-add-btn i {
+    font-size: 16px;
+    color: white;
+}
+
+.header-credits-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.header-credits-link i {
+    font-size: 18px;
+}
+
+/* Topup Dialog */
+.topup-dialog {
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.topup-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.topup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.topup-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.topup-header .close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.topup-header .close-btn:hover {
+    background: #f0f0f0;
+}
+
+.topup-description {
+    padding: 12px 20px;
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.topup-tools-link {
+    color: #9c27b0;
+    font-weight: 500;
+}
+
+.topup-balance {
+    padding: 16px 20px;
+    font-size: 16px;
+    color: #666;
+    background: #f9f9f9;
+}
+
+.topup-amounts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px 20px;
+}
+
+.amount-btn {
+    flex: 1;
+    min-width: 60px;
+    padding: 12px 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.amount-btn:hover {
+    border-color: #4CAF50;
+}
+
+.amount-btn.selected {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+}
+
+.topup-custom {
+    padding: 0 20px 16px;
+}
+
+.topup-custom input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.topup-custom input:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+#stripe-checkout-element {
+    padding: 0 20px 20px;
+    min-height: 100px;
+}
+
+.topup-loading {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
